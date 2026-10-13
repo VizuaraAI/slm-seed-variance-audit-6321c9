@@ -1,0 +1,24 @@
+# Core training and modelling stack
+torch>=2.4.0
+transformers>=4.45.0
+datasets>=3.0.0
+accelerate>=1.0.0
+tokenizers>=0.20.0
+safetensors>=0.4.5
+
+# Statistics and analysis
+numpy>=1.26.0
+scipy>=1.13.0
+pandas>=2.2.0
+statsmodels>=0.14.2
+
+# Config, plotting, logging
+pyyaml>=6.0.1
+matplotlib>=3.9.0
+tqdm>=4.66.0
+rich>=13.7.0
+
+# Optional but recommended: the standard open-source eval harness.
+# Install with: pip install "lm-eval>=0.4.5"
+# src/evaluate.py works without it; the harness is only used by
+# scripts/run_harness_eval.sh for the cross-check described in the paper.

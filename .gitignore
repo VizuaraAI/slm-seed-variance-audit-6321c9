@@ -1,0 +1,14 @@
+# Run artefacts and derived results: regenerable, and large.
+runs/
+results/
+figures/
+.venv/
+__pycache__/
+*.pyc
+
+# Your harvested claim database is yours to commit once it has real rows;
+# the template stays tracked, the working copy does not.
+experiments/claims.csv
+
+# Hugging Face cache, if you point it at the project
+.cache/

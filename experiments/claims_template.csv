@@ -1,0 +1,2 @@
+claim_id,paper,arxiv_id,year,benchmark,model_a,model_b,score_a,score_b,params_b_millions,reports_variance,n_seeds_reported,notes
+EXAMPLE-01,Replace this row with a real paper you have read,0000.00000,2025,arc_easy,baseline as named in the paper,proposed model as named in the paper,0.0,0.0,,false,,delete this example row before running the analysis

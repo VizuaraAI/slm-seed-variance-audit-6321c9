@@ -1,0 +1,65 @@
+# Default configuration for the SLM seed-variance audit.
+#
+# Everything in this file is held FIXED across runs except `seed`, which the
+# sweep script overrides. That is the whole experimental design: if the only
+# thing that changes is the seed, then any score spread you observe is
+# run-to-run noise rather than a method effect.
+
+experiment:
+  name: seed-variance-audit
+  output_dir: runs
+  # Seeds used by scripts/run_seed_sweep.sh. Start with 5 while you debug,
+  # then move to 10 (and 20 for the headline model) for the paper.
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+model:
+  # Small, openly licensed, and cheap enough to fine-tune many times.
+  # Swap in any Hugging Face causal LM id. The size ladder in the paper is:
+  #   EleutherAI/pythia-160m, EleutherAI/pythia-410m,
+  #   HuggingFaceTB/SmolLM2-135M, Qwen/Qwen2.5-0.5B
+  name: EleutherAI/pythia-160m
+  dtype: float32          # float32 on CPU, bfloat16 on a modern GPU
+  trust_remote_code: false
+
+data:
+  # Supervised fine-tuning corpus for the training-variance experiment.
+  sft_dataset: tatsu-lab/alpaca
+  sft_split: train
+  sft_max_examples: 4000
+  max_seq_length: 512
+
+train:
+  epochs: 1
+  batch_size: 8
+  grad_accum_steps: 2
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.03
+  max_grad_norm: 1.0
+  log_every: 25
+  # Controls whether data order is reshuffled per seed. Keep true for the
+  # main experiment: data order is part of what a seed changes in practice.
+  shuffle_data: true
+  # Set true to also fix cuDNN/cuBLAS determinism. Slower, but it separates
+  # "seed noise" from "nondeterministic kernel noise", which is an ablation
+  # the paper reports.
+  deterministic_kernels: false
+
+eval:
+  # Multiple-choice benchmarks scored by length-normalised log-likelihood.
+  tasks: [arc_easy, hellaswag]
+  max_eval_examples: 500
+  # Three surface forms of the same question. Prompt format is a second,
+  # often larger, source of variance and the paper measures both.
+  prompt_templates: [plain, qa, instruct]
+  batch_size: 8
+
+analysis:
+  # Bootstrap resamples for confidence intervals on the seed standard deviation.
+  bootstrap_resamples: 10000
+  confidence_level: 0.95
+  # A reported gap is called "within seed noise" below this many seed sigmas
+  # and "survives replication" above ses_strong.
+  ses_floor: 1.0
+  ses_strong: 2.0
+  claims_csv: experiments/claims.csv
